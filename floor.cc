@@ -265,10 +265,6 @@ void Floor::spawn_enemies() {
             int posx,posy;
             posx = rand() % height;
             posy = rand() % width;
-            while (grid[posx][posy].display != '.') {
-                posx = rand() % height;
-                posy = rand() % width;
-            }
             if (grid[posx][posy].display == '.') {
                 grid[posx][posy].set_enemy(addr);
                 grid[posx][posy].display = 'H';
@@ -283,10 +279,6 @@ void Floor::spawn_enemies() {
             int posx,posy;
             posx = rand() % height;
             posy = rand() % width;
-            while (grid[posx][posy].display != '.') {
-                posx = rand() % height;
-                posy = rand() % width;
-            }
             if (grid[posx][posy].display == '.') {
                 grid[posx][posy].set_enemy(addr);
                 grid[posx][posy].display = 'W';
@@ -300,10 +292,6 @@ void Floor::spawn_enemies() {
             int posx,posy;
             posx = rand() % height;
             posy = rand() % width;
-            while (grid[posx][posy].display != '.') {
-                posx = rand() % height;
-                posy = rand() % width;
-            }
             if (grid[posx][posy].display == '.') {
                 grid[posx][posy].set_enemy(addr);
                 grid[posx][posy].display = 'L';
@@ -317,10 +305,6 @@ void Floor::spawn_enemies() {
             int posx,posy;
             posx = rand() % height;
             posy = rand() % width;
-            while (grid[posx][posy].display != '.') {
-                posx = rand() % height;
-                posy = rand() % width;
-            }
             if (grid[posx][posy].display == '.') {
                 grid[posx][posy].set_enemy(addr);
                 grid[posx][posy].display = 'E';
@@ -334,10 +318,6 @@ void Floor::spawn_enemies() {
             int posx,posy;
             posx = rand() % height;
             posy = rand() % width;
-            while (grid[posx][posy].display != '.') {
-                posx = rand() % height;
-                posy = rand() % width;
-            }
             if (grid[posx][posy].display == '.') {
                 grid[posx][posy].set_enemy(addr);
                 grid[posx][posy].display = 'O';
@@ -351,10 +331,6 @@ void Floor::spawn_enemies() {
             int posx,posy;
             posx = rand() % height;
             posy = rand() % width;
-            while (grid[posx][posy].display != '.') {
-                posx = rand() % height;
-                posy = rand() % width;
-            }
             if (grid[posx][posy].display == '.') {
                 grid[posx][posy].set_enemy(addr);
                 grid[posx][posy].display = 'M';
@@ -376,10 +352,6 @@ void Floor::spawn_gold() {
             int posx,posy;
             posx = rand() % height;
             posy = rand() % width;
-            while (grid[posx][posy].display != '.') {
-                posx = rand() % height;
-                posy = rand() % width;
-            }
             if (grid[posx][posy].display == '.') {
                 grid[posx][posy].set_item(&a);
                 grid[posx][posy].display = 'G';

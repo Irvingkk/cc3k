@@ -64,8 +64,7 @@ public:
     Cell* getPlayer();
     string usepotion(string dir);
     string attackenemy(string dir, bool is_hostile);
-    string attackplayer(bool is_hostile);
-    ~Floor();
+    string attackplayer(bool is_hostile);    ~Floor();
 };
 
 #endif /* floor_hpp */
