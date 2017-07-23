@@ -37,30 +37,35 @@
 class Floor {
     int width = 80;
     int height = 25;
-    //Cell grid[width][height];
-    //Cell** grid;
     vector<vector<Cell>> grid;
     vector<vector<Cell*>> chamber;
-//    vector<Cell*> availableCell;
-    vector<Enemy> listofenmey;
+    vector<Character*> listofenmey;
     vector<Potion> listofpotion;
     vector<Treasure> listoftreasure;
     int playerX;
     int playerY;
     bool is_drow=false;
+    Cell *newcord(string dir, int x, int y);
+    string attackplayer(Character *nc, Character *player);
 public:
     Floor();
     Floor(std::string,int);
     void set_chamber();
-    void spawn_player(std::string);
+    void spawn_player(Character*);
     void spawn_potions();
     void spawn_enemies();
     void move_enemy();
-    void move_player();
+    string move_player(string);
     void DisplayMap();
     void spawn_gold();
+    bool is_valid(int,int);
+    void swap(Cell*,Cell*);
     Cell* getCell(int x, int y);
     Cell* getPlayer();
+    string usepotion(string dir);
+    string attackenemy(string dir, bool is_hostile);
+    string attackplayer(bool is_hostile);
+    ~Floor();
 };
 
 #endif /* floor_hpp */

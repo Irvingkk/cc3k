@@ -11,35 +11,34 @@
 #include <sstream>
 #include <iostream>
 using namespace std;
-Gameplay::Gameplay(): is_hostile{false}, champion{' '}, curr{0}{
-    Floor f1;
-    Floor f2;
-    Floor f3;
-    Floor f4;
-    Floor f5;
-    vector<Floor> v;
-    v.push_back(f1);
-    v.push_back(f2);
-    v.push_back(f3);
-    v.push_back(f4);
-    v.push_back(f5);
+Gameplay::Gameplay(): is_hostile{false}, champion{' '}, pc{nullptr}, curr{0}{
+    //Floor f1;
+    //Floor f2;
+    //Floor f3;
+    //Floor f4;
+    //Floor f5;
+    v.push_back(Floor());
+    v.push_back(Floor());
+    //v.push_back(Floor());
+    //v.push_back(Floor());
+    //v.push_back(Floor());
     
 }
 
-Gameplay::Gameplay(string file): is_hostile{false}, champion{' '}, curr{0}{
-    Floor f1(file,1);
-    Floor f2(file,2);
-    Floor f3(file,3);
-    Floor f4(file,4);
-    Floor f5(file,5);
-    vector<Floor> v;
-    v.push_back(f1);
-    v.push_back(f2);
-    v.push_back(f3);
-    v.push_back(f4);
-    v.push_back(f5);
-}
+//Gameplay::Gameplay(string file): is_hostile{false}, champion{' '}, curr{0}{
+//    Floor f1(file,1);
+//    Floor f2(file,2);
+//    Floor f3(file,3);
+//    Floor f4(file,4);
+//    Floor f5(file,5);
 
+//    v.push_back(f1);
+//    v.push_back(f2);
+//    v.push_back(f3);
+//    v.push_back(f4);
+//    v.push_back(f5);
+//}
+//
 
 
 
@@ -47,7 +46,6 @@ void Gameplay::setplayer(){
     switch(champion){
         case 's':{
             pc=new Shade();
-            
             break;
         }
         case 'd':{
@@ -67,13 +65,18 @@ void Gameplay::setplayer(){
             break;
         }
         default:
-            throw "invalid player";
+            string s = "bad enter";
+            throw s;
             break;
     }
     v[curr].spawn_player(pc);
+    v[curr].spawn_potions();
+    v[curr].spawn_gold();
+    v[curr].spawn_enemies();
 }
 
 int Gameplay::create_game(){
+//    vector<Floor
     cout << "choose a champion" << endl;
     while(true){
         if (cin >> champion){
@@ -88,6 +91,8 @@ int Gameplay::create_game(){
             cin.ignore();
         }
     }
+    //displayall("");
+
     string s;
     string cmd;
     string mode = "normal";
@@ -197,23 +202,23 @@ int Gameplay::create_game(){
 void Gameplay::displayall(string info){
     v[curr].DisplayMap();
     string fullinfo;
-    string c;
+    string pc;
     switch(champion){
         case 's':
-            c = "Shade";
+            pc = "Shade";
         case 'd':
-            c = "Drow";
+            pc = "Drow";
         case 'v':
-            c = "Vampire";
+            pc = "Vampire";
         case 'g':
-            c = "Goblin";
+            pc = "Goblin";
         case 't':
-            c = "Troll";
+            pc = "Troll";
         default:
             break;
     }
-    Character *player = pc;
-    cout << "Race: " << c << " Gold: " << player->getGold() << endl;
+    Character * player = (v[curr].getPlayer())->getCharacter();
+    cout << "Race: " << pc << " Gold: " << player->getGold() << endl;
     cout << "Hp: " << player->getHp() <<endl;
     cout << "Atk: " << player->getAtk() <<endl;
     cout << "Def: " << player->getDef() <<endl;
@@ -224,6 +229,7 @@ void Gameplay::displayall(string info){
 }
 
 Gameplay::~Gameplay(){
+    //cout << "Game dtor" << endl;
     delete pc;
 }
 //consider player enemy movement after every round
