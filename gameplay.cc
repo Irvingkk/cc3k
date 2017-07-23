@@ -12,16 +12,16 @@
 #include <iostream>
 using namespace std;
 Gameplay::Gameplay(): is_hostile{false}, champion{' '}, pc{nullptr}, curr{0}{
-    //Floor f1;
-    //Floor f2;
-    //Floor f3;
-    //Floor f4;
-    //Floor f5;
-    v.push_back(Floor());
-    v.push_back(Floor());
-    //v.push_back(Floor());
-    //v.push_back(Floor());
-    //v.push_back(Floor());
+    Floor f1;
+    Floor f2;
+    Floor f3;
+    Floor f4;
+    Floor f5;
+    v.push_back(f1);
+    v.push_back(f2);
+    v.push_back(f3);
+    v.push_back(f4);
+    v.push_back(f5);
     
 }
 
@@ -69,10 +69,7 @@ void Gameplay::setplayer(){
             throw s;
             break;
     }
-    v[curr].spawn_player(pc);
-    v[curr].spawn_potions();
-    v[curr].spawn_gold();
-    v[curr].spawn_enemies();
+    v[0].spawn_player(pc);
 }
 
 int Gameplay::create_game(){
@@ -82,6 +79,10 @@ int Gameplay::create_game(){
         if (cin >> champion){
             try{
                 setplayer();
+                v[curr].spawn_potions();
+                v[curr].spawn_gold();
+                v[curr].spawn_enemies();
+                v[curr].DisplayMap();
             } catch(string s){
                 cout << s << endl;
             }
