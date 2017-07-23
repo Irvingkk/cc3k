@@ -210,7 +210,7 @@ Cell* Floor::getPlayer() {
 }
 
 
-void Floor::spawn_player(std::string playername) {
+void Floor::spawn_player(Character* pc) {
     int x, stairX;
     unsigned int y, stairY;
     x = rand() % 5;
@@ -223,89 +223,17 @@ void Floor::spawn_player(std::string playername) {
             break;
         }
     }
-    switch (playername[0]) {
-        case 'S':{
-            Shade S = Shade();
-            Character* addr = &(S);
-            chamber[x][y]->_content = addr;
-            chamber[x][y]->display = '@';
-            chamber[x][y]->is_player = true;
-            chamber[x][y]->is_enemy = false;
-            chamber[x][y]->is_item = false;
-            chamber[x][y]->is_occupied = true;
-            playerX = chamber[x][y]->getx();
-            playerY = chamber[x][y]->gety();
-            break;
-        }
-        case 'D':{
-            Drow D = Drow();
-            Character* addr = &(D);
-            chamber[x][y]->_content = addr;
-            chamber[x][y]->display = '@';
-            chamber[x][y]->is_player = true;
-            chamber[x][y]->is_enemy = false;
-            chamber[x][y]->is_item = false;
-            chamber[x][y]->is_occupied = true;
-            playerX = chamber[x][y]->getx();
-            playerY = chamber[x][y]->gety();
-            is_drow = true;
-            break;
-        }
-        case 'V':{
-            Vampire V = Vampire();
-            Character* addr = &(V);
-            chamber[x][y]->_content = addr;
-            chamber[x][y]->display = '@';
-            chamber[x][y]->is_player = true;
-            chamber[x][y]->is_enemy = false;
-            chamber[x][y]->is_item = false;
-            chamber[x][y]->is_occupied = true;
-            playerX = chamber[x][y]->getx();
-            playerY = chamber[x][y]->gety();
-            break;
-        }
-        case 'T':{
-            Troll T = Troll();
-            Character* addr = &(T);
-            chamber[x][y]->_content = addr;
-            chamber[x][y]->display = '@';
-            chamber[x][y]->is_player = true;
-            chamber[x][y]->is_enemy = false;
-            chamber[x][y]->is_item = false;
-            chamber[x][y]->is_occupied = true;
-            playerX = chamber[x][y]->getx();
-            playerY = chamber[x][y]->gety();
-            break;
-        }
-        case 'G': {
-            Goblin G = Goblin();
-            Character* addr = &(G);
-            chamber[x][y]->_content = addr;
-            chamber[x][y]->display = '@';
-            chamber[x][y]->is_player = true;
-            chamber[x][y]->is_enemy = false;
-            chamber[x][y]->is_item = false;
-            chamber[x][y]->is_occupied = true;
-            playerX = chamber[x][y]->getx();
-            playerY = chamber[x][y]->gety();
-            break;
-        }
-    }
+    chamber[x][y]->_content = pc;
+    chamber[x][y]->display = '@';
+    chamber[x][y]->set_player();
+    playerX = chamber[x][y]->getx();
+    playerY = chamber[x][y]->gety();
     stairY = rand() % chamber[stairX].size();
     chamber[stairX][stairY]->is_occupied = true;
     chamber[stairX][stairY]->is_player = false;
     chamber[stairX][stairY]->is_item = false;
     chamber[stairX][stairY]->is_enemy = false;
     chamber[stairX][stairY]->display = '\\';
-//    unsigned int availableCellsize;
-//    availableCellsize = availableCell.size();
-//    for (int i = 0; i < availableCellsize; i++) {
-//        if (i == playerX) {
-//           if (playerY == availableCell[i]->gety())
-//               availableCell.erase(i);
-//        }
-//    }
-
 }
 
 
@@ -475,7 +403,15 @@ void Floor::move_enemy() {
 }
 
 
-void Floor::move_player(){
+void Floor::move_player(string dir){
+    if (dir == "no") {
+        if (grid[playerX][playerY].display == '.' ||
+            grid[playerX][playerY].display == '#' ||
+            grid[playerX][playerY].display == '+') {
+            playerx
+        }
+    }
+
     
 }
 
