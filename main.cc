@@ -7,16 +7,16 @@
 //
 
 #include <iostream>
-#include "floor.h"
-#include "cell.h"
-#include "character.h"
-
+#include "gameplay.h"
 
 int main(int argc, const char * argv[]) {
-    Floor a;
-    a.DisplayMap();
-    Floor b;
-    b.DisplayMap();
-    cout << "hello word";
-    return 0;
+    while(true){
+        Gameplay game;
+        int i = game.create_game();
+        if(i == 1){
+            continue;
+        } else if(i == 2){
+            return 0;
+        }
+    }
 }
