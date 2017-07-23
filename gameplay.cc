@@ -197,23 +197,23 @@ int Gameplay::create_game(){
 void Gameplay::displayall(string info){
     v[curr].DisplayMap();
     string fullinfo;
-    string pc;
+    string c;
     switch(champion){
         case 's':
-            pc = "Shade";
+            c = "Shade";
         case 'd':
-            pc = "Drow";
+            c = "Drow";
         case 'v':
-            pc = "Vampire";
+            c = "Vampire";
         case 'g':
-            pc = "Goblin";
+            c = "Goblin";
         case 't':
-            pc = "Troll";
+            c = "Troll";
         default:
             break;
     }
-    Character * player = (v[curr].getPlayer())->getCharacter();
-    cout << "Race: " << pc << " Gold: " << player->getGold() << endl;
+    Character *player = pc;
+    cout << "Race: " << c << " Gold: " << player->getGold() << endl;
     cout << "Hp: " << player->getHp() <<endl;
     cout << "Atk: " << player->getAtk() <<endl;
     cout << "Def: " << player->getDef() <<endl;
