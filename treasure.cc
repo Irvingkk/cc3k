@@ -40,3 +40,7 @@ bool Treasure::is_Potion() {
 Character *Treasure::getdragon(){
     return dragon;
 }
+
+void Treasure::setdragon(Character *d){
+    dragon = d;
+}

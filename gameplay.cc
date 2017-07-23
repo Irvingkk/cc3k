@@ -40,146 +40,37 @@ Gameplay::Gameplay(string file): is_hostile{false}, champion{' '}, curr{0}{
     v.push_back(f5);
 }
 
-Cell* Gameplay::newcord(string dir, int x, int y){
-    Cell *c;
-    if (dir == "no"){
-        c = f.getCell(x - 1, y);
-    } else if (dir == "so") {
-        c= f.getCell(x + 1, y);
-    } else if (dir == "ea") {
-        c= f.getCell(x, y + 1);
-    } else if (dir == "we") {
-        c= f.getCell(x, y - 1);
-    } else if (dir == "ne") {
-        c= f.getCell(x - 1, y + 1);
-    } else if (dir == "nw") {
-        c= f.getCell(x - 1, y - 1);
-    } else if (dir == "se") {
-        c= f.getCell(x + 1, y + 1);
-    } else if (dir == "sw"){
-        c= f.getCell(x + 1, y - 1);
-    }
-    return c;
-}
 
-string Gameplay::move(string dir){
-    v[curr].move_player(dir);//pick up gold
-    return "player moves toward" + dir;
-}
 
-string Gameplay::usepotion(string dir){
-    int row = f.playerX;
-    int col = f.playerY;
-    Cell *n = newcord(dir, row, col);
-    Item *p;
-    Character *player;
-    
-    if(n->display == 'P') {
-        p = n->getItem();
-        player = (v[curr].getCell(row, col))->getCharacter();
-    } else {
-        throw "that is not a potion";
-    }
-    string potion = p->effect(player);
-    if(player->getHp() == 0){//player die by using poison
-        return "player die!";
-    }
-    v[curr].DisplayMap();
-    return "PC uses " + potion;
-}
-
-string Gameplay::attackenemy(string dir){
-    int row = f.playerX();
-    int col = f.playerY();
-    Cell *c = newcord(dir, row, col);
-    Character *nc;
-    Character *player;
-    string info;
-    if(c->display == 'H'| c->display =='W'| c->display =='E' | c->display =='O'
-       | c->display == 'M'| c->display == 'D' |c->display =='L') {
-        nc = c->getCharacter();
-        player = (v[curr].getCell(row, col)).getCharacter;
-    } else {
-        return "That is not an enemy";
-    }
-    if(nc->getType() == "merchant"){
-        is_hostile = true;
-        info = player->attack(nc);
-    } else {
-        info = player->attack(nc);
-    }
-    if(nc->getHp() == 0){//enemy die;
-        if(nc->getType() == "human"){
-            Treasure gold{"human_normal", nullptr};
-            c->rmobject();
-            c->set_item(&gold);
-        } else if(nc->getType() == "dragon"){
-            int len = c->numberofneighbours;
-            for(int i = 0; i < len; ++i){
-                if(c->getNeighbour(i)->is_item){
-                    Item *item = c->getNeighbour(i)->getItem();
-                    if(!(item->is_Potion())){
-                        item->getdragon() = nullptr;
-                    }
-                }
-            }
-        } else if(nc->getType() == "merchant"){
-            Treasure gold{"merchant_hoard", nullptr};
-            c->rmobject();
-            c->set_item(&gold);
-        } else{
-            player->addGold(nc->getGold());
-            c->rmobject();
-        }
-    }
-    return info;
-}
-
-string Gameplay::attackplayer(bool is_hostile){
-    string info;
-    Cell *player = f.getCell(f.playerX, f.playerY);
-    Character *pc = player->getCharacter();
-    int len = player->numberofneighbours;
-    for (int i = 0; i < len; ++i){
-        if(player->getNeighbour(i)->is_enemy){
-            Character *nc = player->getNeighbour(i)->getCharacter();
-            if(nc->getType() == "elf"){
-                if(pc->getType() != "drow"){
-                    info = nc->attack(pc);
-                    info += nc->attack(pc);
-                }
-            } else if (nc->getType() == "merchant"){
-                if(is_hostile){
-                    info = nc->attack(pc);
-                }
-            } else{
-                info = nc->attack(pc);
-            }
-        }else if(player->getNeighbour(i)->is_item){
-            Item *item = player->getNeighbour(i)->getItem();
-            if(!(item->is_Potion())){
-                Character *nc = item->getdragon();
-                if(nc->getType() == "dragon"){
-                    info = nc->attack(pc);
-                }
-            }
-        }
-    }
-    if(pc->getHp() == 0){
-        return "player die!";
-    } else {
-        return info;
-    }
-}
 
 void Gameplay::setplayer(){
-    if(champion == 's' || champion == 'd' || champion == 'v'
-       || champion == 'g' || champion == 't'){
-        v[curr].spawn_player(toupper(champion));
-    } else{
-        string s = "bad enter";
-        throw s;
+    switch(champion){
+        case 's':{
+            pc=new Shade();
+            
+            break;
+        }
+        case 'd':{
+            pc=new Drow();
+            break;
+        }
+        case 'v':{
+            pc=new Vampire();
+            break;
+        }
+        case 'g':{
+            pc=new Goblin();
+            break;
+        }
+        case 't':{
+            pc=new Troll();
+            break;
+        }
+        default:
+            throw "invalid player";
+            break;
     }
+    v[curr].spawn_player(pc);
 }
 
 int Gameplay::create_game(){
@@ -200,19 +91,20 @@ int Gameplay::create_game(){
     string s;
     string cmd;
     string mode = "normal";
+    char c;
     int i = 0;
     while(true){
         string info = "";
         if(cin >> cmd){
             if(cmd == "no" || cmd == "so" || cmd == "ea" || cmd == "we" || cmd == "ne" ||
                cmd == "nw" || cmd == "se" || cmd == "sw"){
-                info = attackplayer();
+                info = v[curr].attackplayer(is_hostile);
                 if(info == "player die!"){
                     displayall(info);
                     cin >> i;
                     return i;
                 } else {
-                    info += "\n" + move_player(cmd);
+                    info = info + "\n" + v[curr].move_player(cmd);
                 }
                 if(mode == "normal"){
                     v[curr].move_enemy();
@@ -227,10 +119,10 @@ int Gameplay::create_game(){
                         info += " and moves to the next floor!";
                         displayall(info);
                         ++curr;
-                        set_player(pc, curr);
+                        pc->reset();
+                        v[curr].spawn_player(pc);
                     }
                 }
-                break;
             } else{
                 istringstream ss{cmd};
                 if(!(ss >> c)){
@@ -241,13 +133,13 @@ int Gameplay::create_game(){
                 switch (cmd[0]) {
                     case 'u':
                         cin >> cmd;
-                        info += attackplayer();
+                        info += v[curr].attackplayer(is_hostile);
                         if(info == "player die!"){
                             displayall(info);
                             cin >> i;
                             return i;
                         }
-                        s = usepotion(cmd);
+                        s = v[curr].usepotion(cmd);
                         if(s == "player die!"){
                             displayall(info);
                             cin >> i;
@@ -262,8 +154,8 @@ int Gameplay::create_game(){
                         break;
                     case 'a':
                         cin >> cmd;
-                        info = attackenemy(cmd);
-                        s = attackplayer();
+                        info = v[curr].attackenemy(cmd,is_hostile);
+                        s = v[curr].attackplayer(is_hostile);
                         if(s == "player die!"){
                             displayall(info);
                             cin >> i;
@@ -272,17 +164,17 @@ int Gameplay::create_game(){
                             info += " and " + s;
                         }
                         if(mode == "normal"){
-                            f.move_enemy();
+                            v[curr].move_enemy();
                         }
                         displayall(info);
                         break;
                     case 'f':
                         if(mode == "normal"){
                             mode = "static";
-                            info = "change to normal mode"
+                            info = "change to normal mode";
                         } else {
                             mode = "normal";
-                            info = "change to static mode"
+                            info = "change to static mode";
                         }
                         displayall(info);
                     case 'r':
@@ -303,7 +195,7 @@ int Gameplay::create_game(){
 }
 
 void Gameplay::displayall(string info){
-    v[curr].DisplayMap;
+    v[curr].DisplayMap();
     string fullinfo;
     string pc;
     switch(champion){
@@ -317,6 +209,8 @@ void Gameplay::displayall(string info){
             pc = "Goblin";
         case 't':
             pc = "Troll";
+        default:
+            break;
     }
     Character * player = (v[curr].getPlayer())->getCharacter();
     cout << "Race: " << pc << " Gold: " << player->getGold() << endl;
@@ -329,6 +223,9 @@ void Gameplay::displayall(string info){
     cout <<"Action: " << info<< endl;
 }
 
+Gameplay::~Gameplay(){
+    delete pc;
+}
 //consider player enemy movement after every round
 
 
