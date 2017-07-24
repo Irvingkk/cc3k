@@ -8,6 +8,7 @@
 
 #include <iostream>
 #include "gameplay.h"
+#include "floor.h"
 
 int main(int argc, const char * argv[]) {
     while(true){
@@ -19,4 +20,15 @@ int main(int argc, const char * argv[]) {
             return 0;
         }
     }
+//    Floor a;
+//    Character* pc = new Vampire();
+//    a.DisplayMap();
+//    a.spawn_player(pc);
+//    a.DisplayMap();
+//    a.spawn_potions();
+//    a.DisplayMap();
+//    a.spawn_gold();
+//    a.DisplayMap();
+//    a.spawn_enemies();
+//    a.DisplayMap();
 }

@@ -15,27 +15,25 @@
 using namespace std;
 
 Floor::Floor() {
-    cout << "Default cotr" <<endl;
+    //cout << "Default cotr" <<endl;
     ifstream map("floor.txt");
-//    if (map.is_open()) {
-//        cout << "file is open" << endl;
-//    }
     char ch = 'a';
-    //grid[width][height];
+
     for (int i = 0; i < height; i++) {
         vector<Cell> temp;
         for (int j = 0; j < width; j++) {
             map.read(&ch,1);
-            //grid[i][j].Cell();
-            //grid[i][j].setCell(i,j,ch);
             Cell a = Cell();
-            a.setCell(i,j,ch);
+            a.setCell(i,j,ch); // set coordinate and display of cell here
             temp.push_back(a);
-            //cout << a.display;
+
         }
-        //cout << endl;
+
         grid.push_back(temp);
     }
+    
+    
+    // set chambers from here
     vector<Cell*> temp1;
     for (int i = 0; i < height; i++) {
         for (int j = 0; j < width;j++) {
@@ -47,7 +45,6 @@ Floor::Floor() {
             }
         }
     }
-    //cout << temp1.size() << endl;
     chamber.push_back(temp1);
     vector<Cell*> temp2;
     for (int i = 0; i < height; i++) {
@@ -75,7 +72,6 @@ Floor::Floor() {
             }
         }
     }
-   //cout << temp2.size() << endl;
     chamber.push_back(temp2);
     vector<Cell*> temp3;
     for (int i = 0; i < height; i++) {
@@ -89,7 +85,6 @@ Floor::Floor() {
         }
     }
     chamber.push_back(temp3);
-    //cout << temp3.size() << endl;
     vector<Cell*> temp4;
     for (int i = 0; i < height; i++) {
         for (int j = 0; j < width; j++) {
@@ -102,7 +97,6 @@ Floor::Floor() {
         }
     }
     chamber.push_back(temp4);
-    //cout << temp4.size() << endl;
     vector<Cell*> temp5;
     for (int i = 0; i < height; i++) {
         for (int j = 0; j < width; j++) {
@@ -120,7 +114,9 @@ Floor::Floor() {
         }
     }
     chamber.push_back(temp5);
-    //cout << temp5.size() << endl;
+
+    
+    // add neighbours to every cells here
     
     for (int i = 0; i < height; i++) {
         for (int j = 0; j <  width; j++) {
@@ -139,9 +135,6 @@ Floor::Floor() {
             }if(is_valid(i+1, j)) {
                 grid[i][j].neighbours.push_back(&(grid[i+1][j]));
                 grid[i][j].numberofneighbours++;
-            }if(is_valid(i+1, j)) {
-                grid[i][j].neighbours.push_back(&(grid[i+1][j]));
-                grid[i][j].numberofneighbours++;
             }if(is_valid(i-1, j+1)) {
                 grid[i][j].neighbours.push_back(&(grid[i-1][j+1]));
                 grid[i][j].numberofneighbours++;
@@ -154,15 +147,7 @@ Floor::Floor() {
             }
         }
     }
-//    Character *pc = new Vampire();
-//    spawn_player(pc);
-//    spawn_potions();
-//    spawn_gold();
-//    spawn_enemies();
-//    cout << playerX << "    "  << playerY << endl;
-//    //swap(&(grid[4][11]), &(grid[4][12]));
-//    
-//    delete pc;
+
 }
 
 
@@ -184,29 +169,23 @@ Floor::Floor(string filename, int floorindex) {
 }
 
 bool Floor::is_valid(int x, int y) {
-    if (x < height && x >=0 && y >= 0 && y < width) return true;
-    else return false;
+    if (x < height && x >=0 && y >= 0 && y < width){
+        return true;
+    }else{
+        return false;
+    }
 }
 
 Cell* Floor::getCell(int x, int y) {
     return &(grid[x][y]);
 }
 
-Cell* Floor::getPlayer() {
-    return &(grid[playerX][playerY]);
-}
 
-
-void Floor::spawn_player(Character* pc) {
-    cout << "spawn player here" << endl;
+void Floor::spawn_player(Character* pc) { // spawn both player and stair
+    //cout << "spawn player here" << endl;
     int x, stairX;
     unsigned int y, stairY;
     x = rand() % 5;
-//    cout << chamber[0].size() << endl;
-//    cout << chamber[1].size() << endl;
-//    cout << chamber[2].size() << endl;
-//    cout << chamber[3].size() << endl;
-//    cout << chamber[4].size() << endl;
     y = rand() % chamber[x].size();
     stairX = rand() % 5;
     while (1) {
@@ -216,48 +195,47 @@ void Floor::spawn_player(Character* pc) {
             break;
         }
     }
-    chamber[x][y]->_content = pc;
-    chamber[x][y]->display = '@';
-    chamber[x][y]->set_player();
-    cout << x << endl;
-    cout << y << endl;
+    chamber[x][y]->set_enemy(pc); // set player here, share ptr with enemy
+
+    // set the coordinate of player
+    
     playerX = chamber[x][y]->getx();
     playerY = chamber[x][y]->gety();
-    cout << playerY << endl;
-    cout << playerX << endl;
+    //cout << playerY << endl;
+    //cout << playerX << endl;
     stairY = rand() % chamber[stairX].size();
-    chamber[stairX][stairY]->is_occupied = true;
-    chamber[stairX][stairY]->is_player = false;
-    chamber[stairX][stairY]->is_item = false;
-    chamber[stairX][stairY]->is_enemy = false;
-    chamber[stairX][stairY]->display = '\\';
-    
+    chamber[stairX][stairY]->setDisplay('\\');
+    //DisplayMap();
 }
 
 
 void Floor::spawn_potions() {
     vector<string> lop = {"RH", "BA", "BD", "PH", "WA", "WD" };
     for (int i = 0; i <  10; i++) {
-        cout << "spawn potion here " << i << endl;
+        //cout << "spawn potion here " << i << endl;
         unsigned int indexofpotion, numofchamber, indexofcellinsidechamber;
         indexofpotion = rand() % 6;
-        Potion a(lop[indexofpotion],is_drow);
+        Potion* a = new Potion(lop[indexofpotion],is_drow);
         listofpotion.push_back(a);
         numofchamber = rand() % 5;
         indexofcellinsidechamber = rand() % chamber[numofchamber].size();
-        if (chamber[numofchamber][indexofcellinsidechamber]->display == '.') {
-            chamber[numofchamber][indexofcellinsidechamber]->set_item(&a);
-        }else {
+        while(chamber[numofchamber][indexofcellinsidechamber]->getItem() != nullptr || // not a item
+              chamber[numofchamber][indexofcellinsidechamber]->getCharacter() != nullptr || // not a character
+              chamber[numofchamber][indexofcellinsidechamber]->getDisplay()!= '.') { // not a stair
+            
+            // if the cell is occupied, find another one
             indexofcellinsidechamber = rand() % chamber[numofchamber].size();
         }
-        cout << "potion address" << numofchamber  << " " << indexofcellinsidechamber << endl;
+        if (chamber[numofchamber][indexofcellinsidechamber]->getDisplay() == '.') { // set item ptr
+            chamber[numofchamber][indexofcellinsidechamber]->set_item(a);
+        }
     }
 }
 
 
 void Floor::spawn_enemies() {
     for (int i = 0;i < 20;i++) {
-        cout << "spawn enemy here" << i << endl;
+        //cout << "spawn enemy here" << i << endl;
         int x = rand() % 18;
         if (x >= 0 && x <= 3) {
             Character* addr = new Human();
@@ -265,13 +243,14 @@ void Floor::spawn_enemies() {
             int posx,posy;
             posx = rand() % height;
             posy = rand() % width;
-            if (grid[posx][posy].display == '.') {
-                grid[posx][posy].set_enemy(addr);
-                grid[posx][posy].display = 'H';
-            }else{
+            while (grid[posx][posy].getDisplay() != '.' ||
+                   grid[posx][posy].getCharacter() != nullptr||
+                   grid[posx][posy].getItem()!=nullptr) {
                 posx = rand() % height;
                 posy = rand() % width;
             }
+                grid[posx][posy].set_enemy(addr);
+                //grid[posx][posy].display = 'H';
         }else if (x == 4 || x == 5 || x == 6) {
             Character* addr = new Dwarf();
             listofenmey.push_back(addr);
@@ -279,115 +258,127 @@ void Floor::spawn_enemies() {
             int posx,posy;
             posx = rand() % height;
             posy = rand() % width;
-            if (grid[posx][posy].display == '.') {
-                grid[posx][posy].set_enemy(addr);
-                grid[posx][posy].display = 'W';
-            }else{
+            while (grid[posx][posy].getDisplay() != '.' ||
+                   grid[posx][posy].getCharacter() != nullptr||
+                   grid[posx][posy].getItem()!=nullptr) {
                 posx = rand() % height;
                 posy = rand() % width;
             }
+                grid[posx][posy].set_enemy(addr);
         }else if (x >= 7 && x <= 11) {
             Character* addr = new Halfling();
             listofenmey.push_back(addr);
             int posx,posy;
             posx = rand() % height;
             posy = rand() % width;
-            if (grid[posx][posy].display == '.') {
-                grid[posx][posy].set_enemy(addr);
-                grid[posx][posy].display = 'L';
-            }else{
+            while (grid[posx][posy].getDisplay() != '.' ||
+                   grid[posx][posy].getCharacter() != nullptr||
+                   grid[posx][posy].getItem()!=nullptr) {
                 posx = rand() % height;
                 posy = rand() % width;
             }
+                grid[posx][posy].set_enemy(addr);
+
         }else if (x == 12 || x == 13) {
             Character* addr = new Elf();
             listofenmey.push_back(addr);
             int posx,posy;
             posx = rand() % height;
             posy = rand() % width;
-            if (grid[posx][posy].display == '.') {
-                grid[posx][posy].set_enemy(addr);
-                grid[posx][posy].display = 'E';
-            }else{
+            while (grid[posx][posy].getDisplay() != '.' ||
+                   grid[posx][posy].getCharacter() != nullptr||
+                   grid[posx][posy].getItem()!=nullptr) {
                 posx = rand() % height;
                 posy = rand() % width;
             }
+                grid[posx][posy].set_enemy(addr);
         }else if (x == 14 || x == 15) {
             Character* addr = new Orcs();
             listofenmey.push_back(addr);
             int posx,posy;
             posx = rand() % height;
             posy = rand() % width;
-            if (grid[posx][posy].display == '.') {
-                grid[posx][posy].set_enemy(addr);
-                grid[posx][posy].display = 'O';
-            }else{
+            while (grid[posx][posy].getDisplay() != '.' ||
+                   grid[posx][posy].getCharacter() != nullptr||
+                   grid[posx][posy].getItem()!=nullptr) {
                 posx = rand() % height;
                 posy = rand() % width;
             }
+            
+                grid[posx][posy].set_enemy(addr);
         }else if (x == 16 || x == 17) {
             Character* addr = new Merchant();
             listofenmey.push_back(addr);
             int posx,posy;
             posx = rand() % height;
             posy = rand() % width;
-            if (grid[posx][posy].display == '.') {
-                grid[posx][posy].set_enemy(addr);
-                grid[posx][posy].display = 'M';
-            }else{
+            while (grid[posx][posy].getDisplay() != '.' ||
+                   grid[posx][posy].getCharacter() != nullptr||
+                   grid[posx][posy].getItem()!=nullptr) {
                 posx = rand() % height;
                 posy = rand() % width;
             }
+                grid[posx][posy].set_enemy(addr);
         }
     }
 }
 
 void Floor::spawn_gold() {
     for (int i = 0; i < 10; i++) {
-        cout << "spawn gold here" << i << endl;
+        //cout << "spawn gold here" << i << endl;
         int x = rand() % 8;
         if (x >= 0 && x <= 4) {
-            Treasure a("normal",nullptr);
+            Treasure* a = new Treasure("normal",nullptr);
             listoftreasure.push_back(a);
             int posx,posy;
             posx = rand() % height;
             posy = rand() % width;
-            if (grid[posx][posy].display == '.') {
-                grid[posx][posy].set_item(&a);
-                grid[posx][posy].display = 'G';
+            while (grid[posx][posy].getDisplay() != '.' ||
+                   grid[posx][posy].getCharacter() != nullptr||
+                   grid[posx][posy].getItem()!=nullptr) {
+                posx = rand() % height;
+                posy = rand() % width;
+            }
+            if (grid[posx][posy].getDisplay() == '.') {
+                grid[posx][posy].set_item(a);
             }
         }else if (x == 5) {
             Character* d = new Dragon();
             listofenmey.push_back(d);
-            Treasure a("dragon hoard",d);
+            Treasure* a = new Treasure("dragon_hoard",d);
             listoftreasure.push_back(a);
             int posx,posy;
             posx = rand() % height;
             posy = rand() % width;
-            while (grid[posx][posy].display != '.') {
+            while (grid[posx][posy].getDisplay() != '.' ||
+                   grid[posx][posy].getCharacter() != nullptr||
+                   grid[posx][posy].getItem()!=nullptr) {
                 posx = rand() % height;
                 posy = rand() % width;
             }
-            grid[posx][posy].set_item(&a);
-            grid[posx][posy].display = 'G';
+            grid[posx][posy].set_item(a);
             unsigned int dpos = rand() % grid[posx][posy].numberofneighbours;
-            while (grid[posx][posy].getNeighbour(dpos)->display != '.')
+            while (grid[posx][posy].getNeighbour(dpos)->getDisplay() != '.'|| // find a free neighbour cell
+                   grid[posx][posy].getNeighbour(dpos)->getCharacter()!=nullptr||
+                   grid[posx][posy].getNeighbour(dpos)->getItem()!=nullptr)
             {
                 dpos =rand() % grid[posx][posy].numberofneighbours;
             }
-            grid[posx][posy].getNeighbour(dpos)->set_enemy(d);
-            grid[posx][posy].getNeighbour(dpos)->display = 'D';
+            grid[posx][posy].getNeighbour(dpos)->set_enemy(d); // set dragon
             
         }else if (x == 6 || x == 7) {
-            Treasure a("small hoard",nullptr);
+            Treasure* a = new Treasure("small",nullptr);
             listoftreasure.push_back(a);
             int posx,posy;
             posx = rand() % height;
             posy = rand() % width;
-            if (grid[posx][posy].display == '.') {
-                grid[posx][posy].set_item(&a);
-                grid[posx][posy].display = 'G';
+            while (grid[posx][posy].getDisplay() != '.' ||
+                   grid[posx][posy].getCharacter() != nullptr||
+                   grid[posx][posy].getItem()!=nullptr) {
+                posx = rand() % height;
+                posy = rand() % width;
             }
+            grid[posx][posy].set_item(a);
         }
         
     }
@@ -397,139 +388,284 @@ void Floor::move_enemy() {
     vector<Character*> temp;
     for (int i = 0;i < height; i++) {
         for (int j = 0; j < width; j++) {
-            if (grid[i][j].display == 'H' || grid[i][j].display == 'W' || grid[i][j].display == 'E' ||
-                grid[i][j].display == 'O' || grid[i][j].display == 'M' || grid[i][j].display == 'L') {
-                bool is_moved = false;
-                for (unsigned int k = 0; k < temp.size(); k++) {
-                    if (grid[i][j]._content == temp[i]) {
-                        is_moved = true;
+            if(grid[i][j].getCharacter()!=nullptr){
+                if (grid[i][j].getCharacter()->isEnemy() && grid[i][j].getCharacter()->getType()!="dragon") {
+                    bool is_moved = false;
+                    for (unsigned int k = 0; k < temp.size(); k++) {
+                        if (grid[i][j].getCharacter() == temp[i]) {
+                            is_moved = true;
+                        }
+                    }
+                    if (!is_moved) {
+                        unsigned int pos = rand() % grid[i][j].neighbours.size();
+                        while (grid[i][j].neighbours[pos]->getDisplay() != '.'||
+                               grid[i][j].neighbours[pos]->getCharacter()!= nullptr ||
+                               grid[i][j].neighbours[pos]->getItem()!= nullptr) {
+                            pos = rand() % grid[i][j].neighbours.size();
+                        }
+                        Character *ec=grid[i][j].getCharacter();
+                        temp.push_back(ec);
+                        grid[i][j].neighbours[pos]->set_enemy(ec);
+                        grid[i][j].set_enemy(nullptr);
+                        
                     }
                 }
-                if (!is_moved) {
-                // swap at the bottom side
-                unsigned int pos = rand() % grid[i][j].neighbours.size();
-                while (grid[i][j].neighbours[pos]->display != '.') {
-                    pos = rand() % grid[i][j].neighbours.size();
-                }
-                Character* tempenemy = grid[i][j]._content;
-                temp.push_back(tempenemy);
-                swap(&(grid[i][j]), grid[i][j].neighbours[pos]);
-            }
             }
         }
 
     }
+    cout << "enemy moved" << endl;
 }
 
-void Floor::swap(Cell* one, Cell* two) {
-    char swapdisplay = one->display;
-    bool tempocc = one->is_occupied;
-    bool tempenem = one->is_enemy;
-    bool tempitem = one->is_item;
-    bool tempplayer = one->is_player;
-    one->display = two->display;
-    one->is_player = two->is_player;
-    one->is_item = two->is_item;
-    one->is_enemy = two->is_enemy;
-    one->is_occupied = two->is_occupied;
-    two->display = swapdisplay;
-    two->is_occupied = tempocc;
-    two->is_enemy = tempenem;
-    two->is_item = tempitem;
-    two->is_player = tempplayer;
+
+void Floor::swap(Cell* newcell, Cell* oldcell) { //swap character pointer
+    Character* ptr = oldcell->getCharacter();
+    oldcell->set_enemy(newcell->getCharacter());
+    newcell->set_enemy(ptr);
 }
+
 
 
 string Floor::move_player(string dir){
     if (dir == "no") {
-        if (grid[playerX-1][playerY].display == '.' ||
-            grid[playerX-1][playerY].display == '#' ||
-            grid[playerX-1][playerY].display == '+') {
-            grid[playerX-1][playerY]._content = grid[playerX][playerY]._content;
-            grid[playerX-1][playerY].set_player();
-            grid[playerX][playerY].rmobject();
-            playerX--;
-            return "PC move north";
-        }if (grid[playerX-1][playerY].display == '\\') {
-            return "true";
+        if (grid[playerX-1][playerY].getCharacter() == nullptr &&
+            grid[playerX-1][playerY].getItem() == nullptr) {
+            if (grid[playerX-1][playerY].getDisplay() == '.' ||
+                grid[playerX-1][playerY].getDisplay() == '#' ||
+                grid[playerX-1][playerY].getDisplay() == '+') {
+                swap(&grid[playerX-1][playerY],&grid[playerX][playerY]);
+                playerX--;
+                return "PC move north.";
+            }
+            if (grid[playerX-1][playerY].getDisplay() == '\\') {
+                return "true";
+            }
+        }else if (grid[playerX-1][playerY].getCharacter() == nullptr) {
+            if (!grid[playerX-1][playerY].getItem()->is_Potion()) {
+                if (grid[playerX-1][playerY].getItem()->getdragon() == nullptr) {
+                    grid[playerX-1][playerY].getItem()->effect(grid[playerX][playerY].getCharacter());
+                    grid[playerX-1][playerY].set_item(nullptr);
+                    swap(&grid[playerX-1][playerY],&grid[playerX][playerY]);
+                    playerX--;
+                    return "PC move north.";
+                }else{
+                    swap(&grid[playerX-1][playerY],&grid[playerX][playerY]);
+                    playerX--;
+                    return "PC move north.";
+                }
+            }
         }
     }else if (dir == "so") {
-        if (grid[playerX+1][playerY].display == '.' ||
-            grid[playerX+1][playerY].display == '#' ||
-            grid[playerX+1][playerY].display == '+') {
-            grid[playerX+1][playerY]._content = grid[playerX][playerY]._content;
-            grid[playerX+1][playerY].set_player();
-            grid[playerX][playerY].rmobject();
-            playerX++;
-            return "PC move south";
-        }if (grid[playerX+1][playerY].display == '\\'){
-            return "true";
+        if (grid[playerX+1][playerY].getCharacter() == nullptr &&
+            grid[playerX+1][playerY].getItem() == nullptr) {
+            if (grid[playerX+1][playerY].getDisplay() == '.' ||
+                grid[playerX+1][playerY].getDisplay() == '#' ||
+                grid[playerX+1][playerY].getDisplay() == '+') {
+                swap(&grid[playerX+1][playerY],&grid[playerX][playerY]);
+                playerX++;
+                return "PC move south.";
+            }
+            if (grid[playerX+1][playerY].getDisplay() == '\\') {
+                return "true";
+            }
+        }else if (grid[playerX+1][playerY].getCharacter() == nullptr) {
+            if (!grid[playerX+1][playerY].getItem()->is_Potion()) {
+                if (grid[playerX+1][playerY].getItem()->getdragon() == nullptr) {
+                    grid[playerX+1][playerY].getItem()->effect(grid[playerX][playerY].getCharacter());
+                    grid[playerX+1][playerY].set_item(nullptr);
+                    swap(&grid[playerX+1][playerY],&grid[playerX][playerY]);
+                    playerX++;
+                    return "PC move south.";
+                }else{
+                    swap(&grid[playerX+1][playerY],&grid[playerX][playerY]);
+                    playerX++;
+                    return "PC move south.";
+                }
+            }
         }
-    }else if (dir == "ea") {
-        if (grid[playerX][playerY+1].display == '.' ||
-            grid[playerX][playerY+1].display == '#' ||
-            grid[playerX][playerY+1].display == '+') {
-            swap(&(grid[playerX][playerY]),&(grid[playerX][playerY+1]));
-            playerY++;
-            return "PC move east";
-        }if (grid[playerX][playerY+1].display == '\\'){
-            return "true";
-        }
-    }else if (dir == "we") {
-        if (grid[playerX][playerY-1].display == '.' ||
-            grid[playerX][playerY-1].display == '#' ||
-            grid[playerX][playerY-1].display == '+') {
-            swap(&(grid[playerX][playerY]),&(grid[playerX][playerY-1]));
-            playerY--;
-            return "PC move west";
-        }if (grid[playerX][playerY-1].display == '\\'){
-            return "true";
-        }
-    }else if (dir == "ne") {
-        if (grid[playerX-1][playerY+1].display == '.' ||
-            grid[playerX-1][playerY+1].display == '#' ||
-            grid[playerX-1][playerY+1].display == '+') {
-            swap(&(grid[playerX][playerY]),&(grid[playerX-1][playerY+1]));
-            playerY++;
-            playerX--;
-            return "PC move northeast";
-        }if (grid[playerX-1][playerY+1].display == '\\'){
-            return "true";
-        }
-    }else if (dir == "nw"){
-        if (grid[playerX-1][playerY-1].display == '.' ||
-            grid[playerX-1][playerY-1].display == '#' ||
-            grid[playerX-1][playerY-1].display == '+') {
-            swap(&(grid[playerX][playerY]),&(grid[playerX-1][playerY-1]));
-            playerY--;
-            playerX--;
-            return "PC move northest";
-        }if (grid[playerX-1][playerY-1].display == '\\'){
-            return "true";
-        }
-    } else if (dir == "se") {
-        if (grid[playerX+1][playerY+1].display == '.' ||
-            grid[playerX+1][playerY+1].display == '#' ||
-            grid[playerX+1][playerY+1].display == '+') {
-            swap(&(grid[playerX][playerY]),&(grid[playerX+1][playerY+1]));
-            playerY++;
-            playerX++;
-            return "PC move southeast";
-        }if (grid[playerX+1][playerY+1].display == '\\'){
-            return "true";
+
+    }else if (dir == "ea"){
+        if (grid[playerX][playerY+1].getCharacter() == nullptr &&
+            grid[playerX][playerY+1].getItem() == nullptr) {
+            if (grid[playerX][playerY+1].getDisplay() == '.' ||
+                grid[playerX][playerY+1].getDisplay() == '#' ||
+                grid[playerX][playerY+1].getDisplay() == '+') {
+                swap(&grid[playerX][playerY+1],&grid[playerX][playerY]);
+                playerY++;
+                return "PC move east.";
+            }
+            if (grid[playerX][playerY+1].getDisplay() == '\\') {
+                return "true";
+            }
+        }else if (grid[playerX][playerY+1].getCharacter() == nullptr) {
+            if (!grid[playerX][playerY+1].getItem()->is_Potion()) {
+                if (grid[playerX][playerY+1].getItem()->getdragon() == nullptr) {
+                    grid[playerX][playerY+1].getItem()->effect(grid[playerX][playerY].getCharacter());
+                    grid[playerX][playerY+1].set_item(nullptr);
+                    swap(&grid[playerX][playerY+1],&grid[playerX][playerY]);
+                    playerY++;
+                    return "PC move east.";
+                }else{
+                    swap(&grid[playerX][playerY+1],&grid[playerX][playerY]);
+                    playerY++;
+                    return "PC move east.";
+                }
+            }
         }
         
-    }else if (dir == "sw") {
-        if (grid[playerX+1][playerY-1].display == '.' ||
-            grid[playerX+1][playerY-1].display == '#' ||
-            grid[playerX+1][playerY-1].display == '+') {
-            swap(&(grid[playerX][playerY]),&(grid[playerX+1][playerY-1]));
-            playerY--;
-            playerX++;
-            return "PC move southeast";
-        }if (grid[playerX+1][playerY-1].display == '\\'){
-            return "true";
+    }else if (dir == "we") {
+        if (grid[playerX][playerY-1].getCharacter() == nullptr &&
+            grid[playerX][playerY-1].getItem() == nullptr) {
+            if (grid[playerX][playerY-1].getDisplay() == '.' ||
+                grid[playerX][playerY-1].getDisplay() == '#' ||
+                grid[playerX][playerY-1].getDisplay() == '+') {
+                swap(&grid[playerX][playerY-1],&grid[playerX][playerY]);
+                playerY--;
+                return "PC move west.";
+            }
+            if (grid[playerX][playerY-1].getDisplay() == '\\') {
+                return "true";
+            }
+        }else if (grid[playerX][playerY-1].getCharacter() == nullptr) {
+            if (!grid[playerX][playerY-1].getItem()->is_Potion()) {
+                if (grid[playerX][playerY-1].getItem()->getdragon() == nullptr) {
+                    grid[playerX][playerY-1].getItem()->effect(grid[playerX][playerY].getCharacter());
+                    grid[playerX][playerY-1].set_item(nullptr);
+                    swap(&grid[playerX][playerY-1],&grid[playerX][playerY]);
+                    playerY--;
+                    return "PC move west.";
+                }else{
+                    swap(&grid[playerX][playerY-1],&grid[playerX][playerY]);
+                    playerY--;
+                    return "PC move west.";
+                }
+            }
         }
+    }else if (dir == "ne") {
+        if (grid[playerX-1][playerY+1].getCharacter() == nullptr &&
+            grid[playerX-1][playerY+1].getItem() == nullptr) {
+            if (grid[playerX-1][playerY+1].getDisplay() == '.' ||
+                grid[playerX-1][playerY+1].getDisplay() == '#' ||
+                grid[playerX-1][playerY+1].getDisplay() == '+') {
+                swap(&grid[playerX-1][playerY+1],&grid[playerX][playerY]);
+                playerY++;
+                playerX--;
+                return "PC move northeast.";
+            }
+            if (grid[playerX-1][playerY+1].getDisplay() == '\\') {
+                return "true";
+            }
+        }else if (grid[playerX-1][playerY+1].getCharacter() == nullptr) {
+            if (!grid[playerX-1][playerY+1].getItem()->is_Potion()) {
+                if (grid[playerX-1][playerY+1].getItem()->getdragon() == nullptr) {
+                    grid[playerX-1][playerY+1].getItem()->effect(grid[playerX][playerY].getCharacter());
+                    grid[playerX-1][playerY+1].set_item(nullptr);
+                    swap(&grid[playerX-1][playerY+1],&grid[playerX][playerY]);
+                    playerY++;
+                    playerX--;
+                    return "PC move northeast.";
+                }else{
+                    swap(&grid[playerX-1][playerY+1],&grid[playerX][playerY]);
+                    playerY++;
+                    playerX--;
+                    return "PC move northeast.";
+                }
+            }
+        }
+    }else if (dir == "nw") {
+        if (grid[playerX-1][playerY-1].getCharacter() == nullptr &&
+            grid[playerX-1][playerY-1].getItem() == nullptr) {
+            if (grid[playerX-1][playerY-1].getDisplay() == '.' ||
+                grid[playerX-1][playerY-1].getDisplay() == '#' ||
+                grid[playerX-1][playerY-1].getDisplay() == '+') {
+                swap(&grid[playerX-1][playerY-1],&grid[playerX][playerY]);
+                playerY--;
+                playerX--;
+                return "PC move northwest.";
+            }
+            if (grid[playerX-1][playerY-1].getDisplay() == '\\') {
+                return "true";
+            }
+        }else if (grid[playerX-1][playerY-1].getCharacter() == nullptr) {
+            if (!grid[playerX-1][playerY-1].getItem()->is_Potion()) {
+                if (grid[playerX-1][playerY-1].getItem()->getdragon() == nullptr) {
+                    grid[playerX-1][playerY-1].getItem()->effect(grid[playerX][playerY].getCharacter());
+                    grid[playerX-1][playerY-1].set_item(nullptr);
+                    swap(&grid[playerX-1][playerY-1],&grid[playerX][playerY]);
+                    playerY--;
+                    playerX--;
+                    return "PC move northwest.";
+                }else{
+                    swap(&grid[playerX-1][playerY-1],&grid[playerX][playerY]);
+                    playerY--;
+                    playerX--;
+                    return "PC move northwest.";
+                }
+            }
+        }
+    }else if (dir == "se") {
+        if (grid[playerX+1][playerY+1].getCharacter() == nullptr &&
+            grid[playerX+1][playerY+1].getItem() == nullptr) {
+            if (grid[playerX+1][playerY+1].getDisplay() == '.' ||
+                grid[playerX+1][playerY+1].getDisplay() == '#' ||
+                grid[playerX+1][playerY+1].getDisplay() == '+') {
+                swap(&grid[playerX+1][playerY+1],&grid[playerX][playerY]);
+                playerY++;
+                playerX++;
+                return "PC move southeast.";
+            }
+            if (grid[playerX+1][playerY+1].getDisplay() == '\\') {
+                return "true";
+            }
+        }else if (grid[playerX+1][playerY+1].getCharacter() == nullptr) {
+            if (!grid[playerX+1][playerY+1].getItem()->is_Potion()) {
+                if (grid[playerX+1][playerY+1].getItem()->getdragon() == nullptr) {
+                    grid[playerX+1][playerY+1].getItem()->effect(grid[playerX][playerY].getCharacter());
+                    grid[playerX+1][playerY+1].set_item(nullptr);
+                    swap(&grid[playerX-1][playerY+1],&grid[playerX][playerY]);
+                    playerY++;
+                    playerX++;
+                    return "PC move southeast.";
+                }else{
+                    swap(&grid[playerX+1][playerY+1],&grid[playerX][playerY]);
+                    playerY++;
+                    playerX++;
+                    return "PC move southeast.";
+                }
+            }
+        }
+    }else if (dir == "sw") {
+        if (grid[playerX+1][playerY-1].getCharacter() == nullptr &&
+            grid[playerX+1][playerY-1].getItem() == nullptr) {
+            if (grid[playerX+1][playerY-1].getDisplay() == '.' ||
+                grid[playerX+1][playerY-1].getDisplay() == '#' ||
+                grid[playerX+1][playerY-1].getDisplay() == '+') {
+                swap(&grid[playerX+1][playerY-1],&grid[playerX][playerY]);
+                playerY--;
+                playerX++;
+                return "PC move southwest.";
+            }
+            if (grid[playerX+1][playerY-1].getDisplay() == '\\') {
+                return "true";
+            }
+        }else if (grid[playerX+1][playerY-1].getCharacter() == nullptr) {
+            if (!grid[playerX+1][playerY-1].getItem()->is_Potion()) {
+                if (grid[playerX+1][playerY-1].getItem()->getdragon() == nullptr) {
+                    grid[playerX+1][playerY-1].getItem()->effect(grid[playerX][playerY].getCharacter());
+                    grid[playerX+1][playerY-1].set_item(nullptr);
+                    swap(&grid[playerX-1][playerY-1],&grid[playerX][playerY]);
+                    playerY--;
+                    playerX++;
+                    return "PC move southwest.";
+                }else{
+                    swap(&grid[playerX+1][playerY-1],&grid[playerX][playerY]);
+                    playerY--;
+                    playerX++;
+                    return "PC move southwest.";
+                }
+            }
+        }
+
     }
     return "false";
 }
@@ -539,10 +675,37 @@ string Floor::move_player(string dir){
 void Floor::DisplayMap() {
     for(int i = 0; i < height; i ++) {
         for (int j = 0; j < width; j++) {
-            cout << grid[i][j].display;
-            //cout << "1";
+            if (grid[i][j].getCharacter() != nullptr && grid[i][j].getItem()!=nullptr) {
+                cout << '@';
+            }else if (grid[i][j].getCharacter() != nullptr && !grid[i][j].getCharacter()->isEnemy()) { // has a character and is not enemy
+                cout << '@';
+            }else if (grid[i][j].getCharacter() != nullptr && grid[i][j].getCharacter()->isEnemy()) { // has a character and is enemy
+                string s = grid[i][j].getCharacter()->getType();
+                if(s=="human"){
+                    cout << 'H';
+                }else if(s=="dwarf"){
+                    cout << 'W';
+                }else if(s=="elf"){
+                    cout << 'E';
+                }else if(s=="orc"){
+                    cout << 'O';
+                }else if(s=="merchant"){
+                    cout << 'M';
+                }else if(s=="dragon"){
+                    cout << 'D';
+                }else if(s=="halfling"){
+                    cout << 'L';
+                }
+            }else if(grid[i][j].getItem()!=nullptr){ // has a item
+                if(grid[i][j].getItem()->is_Potion()){
+                    cout << 'P';
+                }else{
+                    cout << 'G';
+                }
+            }else {
+                cout << grid[i][j].getDisplay();
+            }
         }
-        //cout << endl;
     }
 }
 
@@ -552,6 +715,14 @@ Floor::~Floor() {
     x = listofenmey.size();
     for (int i = 0; i < x; i++) {
         delete listofenmey[i];
+    }
+    x = listoftreasure.size();
+    for (int i = 0;i < x; i++) {
+        delete listoftreasure[i];
+    }
+    x = listofpotion.size();
+    for (int i = 0; i < x; i++) {
+        delete listofpotion[i];
     }
 }
 
@@ -577,50 +748,55 @@ Cell* Floor::newcord(string dir, int x, int y){
     return c;
 }
 
+
 string Floor::usepotion(string dir){
     Cell *n = newcord(dir, playerX, playerY);
     Item *p;
     Character *player;
-    if(n->display == 'P') {
-        p = n->getItem();
-        player = getPlayer()->getCharacter();
-    } else {
-        throw "that is not a potion";
+    string info="Posion info";
+    if(n->getItem()!=nullptr){
+        if(n->getItem()->is_Potion()) {
+            p = n->getItem();
+            player = grid[playerX][playerY].getCharacter();
+            info=p->effect(player);
+        } else {
+            throw "That is not a potion";
+        }
     }
-    string potion = p->effect(player);
+    n->set_item(nullptr);
     if(player->getHp() == 0){//player die by using poison
-        return "player die!";
+        return "PC is dead!";
     }
-    return "PC uses " + potion;
+    return "PC uses " + info;
 }
 
-string Floor::attackenemy(string dir, bool is_hostile){
+string Floor::attackenemy(string dir, bool& is_hostile){
     Cell *c = newcord(dir, playerX, playerY);
     Character *nc;
-    Character *player;
+    Character *player=grid[playerX][playerY].getCharacter();
     string info;
-    if(c->display == 'H'|| c->display =='W'|| c->display =='E' || c->display =='O'
-       || c->display == 'M'|| c->display == 'D' || c->display =='L') {
-        nc = c->getCharacter();
-        player = getPlayer()->getCharacter();
-    } else {
-        return "That is not an enemy";
+    if(c->getCharacter()!=nullptr){
+        nc=c->getCharacter();
+    }else{
+        return "No player there!"; // no enemy? stop here
     }
+    
     if(nc->getType() == "merchant"){
-        is_hostile = true;
+        is_hostile = true; // set all merchant as hostile
         info = player->attack(nc);
     } else {
         info = player->attack(nc);
     }
-    if(nc->getHp() == 0){//enemy die;
+    if(nc->getHp() == 0){//enemy die
+        c->set_enemy(nullptr); // remove enemy ptr
         if(nc->getType() == "human"){
-            Treasure gold{"human_normal", nullptr};
-            c->rmobject();
-            c->set_item(&gold);
+            Treasure* t= new Treasure("human_normal", nullptr);
+            listoftreasure.push_back(t);
+            c->set_item(t);
         } else if(nc->getType() == "dragon"){
             int len = c->numberofneighbours;
             for(int i = 0; i < len; ++i){
-                if(c->getNeighbour(i)->is_item){
+                if(c->getNeighbour(i)->getItem()!=nullptr){ // set dragon hoard to be pickable
                     Item *item = c->getNeighbour(i)->getItem();
                     if(!(item->is_Potion())){
                         item->setdragon(nullptr);
@@ -628,51 +804,51 @@ string Floor::attackenemy(string dir, bool is_hostile){
                 }
             }
         } else if(nc->getType() == "merchant"){
-            Treasure gold{"merchant_hoard", nullptr};
-            c->rmobject();
-            c->set_item(&gold);
+            Treasure* m=new Treasure("merchant_hoard", nullptr);
+            listoftreasure.push_back(m);
+            c->set_item(m);
         } else{
             player->addGold(nc->getGold());
-            c->rmobject();
         }
     }
     return info;
 }
 
 string Floor::attackplayer(bool is_hostile){
-    string info;
-    Cell *player = getPlayer();
-    Character *pc = player->getCharacter();
-    int len = player->numberofneighbours;
-    for (int i = 0; i < len; ++i){
-        if(player->getNeighbour(i)->is_enemy){
-            Character *nc = player->getNeighbour(i)->getCharacter();
-            if(nc->getType() == "elf"){
-                if(pc->getType() != "drow"){
+    string info="";
+    Cell *playerCell = &grid[playerX][playerY];
+    Character *pc = playerCell->getCharacter();
+    int len = playerCell->numberofneighbours;
+    for (int i = 0; i < len; i++){
+        if(playerCell->getNeighbour(i)->getCharacter()!=nullptr){ // find the enemies
+                Character *nc = playerCell->getNeighbour(i)->getCharacter();
+                if(nc->getType() == "elf"){
+                    if(pc->getType() != "drow"){
+                        info = nc->attack(pc);
+                        info += nc->attack(pc);
+                    }else{
+                        info=nc->attack(pc);
+                    }
+                } else if (nc->getType() == "merchant"){ // enemy is a merchant
+                    if(is_hostile){
+                        info = nc->attack(pc);
+                    }
+                } else{
                     info = nc->attack(pc);
-                    info += nc->attack(pc);
                 }
-            } else if (nc->getType() == "merchant"){
-                if(is_hostile){
-                    info = nc->attack(pc);
-                }
-            } else{
-                info = nc->attack(pc);
+        }else if(playerCell->getNeighbour(i)->getItem()!=nullptr){
+            Item *item = playerCell->getNeighbour(i)->getItem();
+            if((!item->is_Potion())){
+                if((item->getdragon()!=nullptr)) info+=item->getdragon()->attack(pc);
             }
-        }else if(player->getNeighbour(i)->is_item){
-            Item *item = player->getNeighbour(i)->getItem();
-            if(!(item->is_Potion())){
-                Character *nc = item->getdragon();
-                if(nc->getType() == "dragon"){
-                    info = nc->attack(pc);
-                }
-            }
+    }
+        if(pc->getHp() == 0){
+            return "PC is dead!";
+        } else {
+            return info;
         }
     }
-    if(pc->getHp() == 0){
-        return "player die!";
-    } else {
-        return info;
-    }
+    return info;
 }
 
+ 

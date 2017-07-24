@@ -12,16 +12,19 @@
 #include <iostream>
 using namespace std;
 Gameplay::Gameplay(): is_hostile{false}, champion{' '}, pc{nullptr}, curr{0}{
-    Floor f1;
-    Floor f2;
-    Floor f3;
-    Floor f4;
-    Floor f5;
-    v.push_back(f1);
-    v.push_back(f2);
-    v.push_back(f3);
-    v.push_back(f4);
-    v.push_back(f5);
+    //Floor f1;
+    //Floor f2;
+    //Floor f3;
+    //Floor f4;
+    //Floor f5;
+    //v.push_back(Floor());
+    //v.push_back(Floor());
+    //v.push_back(Floor());
+    //v.push_back(Floor());
+    //v.push_back(Floor());
+    for (int i = 0; i < 5; i++) {
+        this->v[i]= new Floor();
+    };
     
 }
 
@@ -69,20 +72,19 @@ void Gameplay::setplayer(){
             throw s;
             break;
     }
-    v[0].spawn_player(pc);
+    v[curr]->spawn_player(pc);
+    v[curr]->spawn_potions();
+    v[curr]->spawn_gold();
+    v[curr]->spawn_enemies();
+
 }
 
 int Gameplay::create_game(){
-//    vector<Floor
     cout << "choose a champion" << endl;
     while(true){
         if (cin >> champion){
             try{
                 setplayer();
-                v[curr].spawn_potions();
-                v[curr].spawn_gold();
-                v[curr].spawn_enemies();
-                v[curr].DisplayMap();
             } catch(string s){
                 cout << s << endl;
             }
@@ -94,9 +96,9 @@ int Gameplay::create_game(){
     }
     //displayall("");
 
-    string s;
+    string s="";
     string cmd;
-    string mode = "normal";
+    bool mode = true; // true means normal mode, flase otherwise
     char c;
     int i = 0;
     while(true){
@@ -104,83 +106,91 @@ int Gameplay::create_game(){
         if(cin >> cmd){
             if(cmd == "no" || cmd == "so" || cmd == "ea" || cmd == "we" || cmd == "ne" ||
                cmd == "nw" || cmd == "se" || cmd == "sw"){
-                info = v[curr].attackplayer(is_hostile);
-                if(info == "player die!"){
-                    displayall(info);
-                    cin >> i;
-                    return i;
-                } else {
-                    info = info + "\n" + v[curr].move_player(cmd);
-                }
-                if(mode == "normal"){
-                    v[curr].move_enemy();
-                }
-                if(v[curr].move_player(cmd) == "true"){
+                // move player
+                info=v[curr]->move_player(cmd);
+                if( info == "true"){ // already move here
                     if(curr == 4){
-                        info = "game win!";
-                        displayall(info);
+                        displayall("Game win!");
                         cin >> i;
                         return i;
+                        // win the game
                     } else {
-                        info += " and moves to the next floor!";
+                        info = "PC moves to the next floor!";
                         displayall(info);
                         ++curr;
                         pc->reset();
-                        v[curr].spawn_player(pc);
+                        v[curr]->spawn_player(pc);
+                        v[curr]->spawn_potions();
+                        v[curr]->spawn_gold();
+                        v[curr]->spawn_enemies();
+                        continue;
+                        // moves to next floor
                     }
                 }
+                
+                if(mode){
+                    v[curr]->move_enemy();
+                }
+                info = v[curr]->attackplayer(is_hostile); // enemys around attack player
+                if(pc->getHp()==0){
+                    displayall("PC is dead!");
+                    cin >> i;
+                    return i;
+                }
+                displayall(info);
+                
             } else{
                 istringstream ss{cmd};
                 if(!(ss >> c)){
                     cin.clear();
                     cin.ignore();
                     continue;
-                };
+                }
                 switch (cmd[0]) {
-                    case 'u':
-                        cin >> cmd;
-                        info += v[curr].attackplayer(is_hostile);
-                        if(info == "player die!"){
-                            displayall(info);
+                    case 'u': // use potion
+                        cin >> cmd; // input direction
+                        info = v[curr]->usepotion(cmd);
+                        // info store the information of using potion
+                        if(pc->getHp()==0){
+                            displayall("PC is dead!");
                             cin >> i;
                             return i;
                         }
-                        s = v[curr].usepotion(cmd);
-                        if(s == "player die!"){
-                            displayall(info);
+                    
+                        if(mode){
+                            v[curr]->move_enemy();
+                        }
+                        info += " ";
+                        info += v[curr]->attackplayer(is_hostile); // enemys around attack player
+                        if(pc->getHp()==0){
+                            displayall("PC is dead!");
                             cin >> i;
                             return i;
-                        } else {
-                            info += " and " + s;
-                        }
-                        if(mode == "normal"){
-                            v[curr].move_enemy();
                         }
                         displayall(info);
                         break;
                     case 'a':
                         cin >> cmd;
-                        info = v[curr].attackenemy(cmd,is_hostile);
-                        s = v[curr].attackplayer(is_hostile);
-                        if(s == "player die!"){
-                            displayall(info);
+                        info = v[curr]->attackenemy(cmd,is_hostile);
+                        info += v[curr]->attackplayer(is_hostile);
+                        if(pc->getHp()==0){
+                            displayall("PC is dead!");
                             cin >> i;
                             return i;
-                        } else {
-                            info += " and " + s;
                         }
-                        if(mode == "normal"){
-                            v[curr].move_enemy();
+                        
+                        if(mode){
+                            v[curr]->move_enemy();
                         }
                         displayall(info);
                         break;
                     case 'f':
-                        if(mode == "normal"){
-                            mode = "static";
-                            info = "change to normal mode";
+                        if(mode){
+                            mode = false;
+                            info = "Change to static mode";
                         } else {
-                            mode = "normal";
-                            info = "change to static mode";
+                            mode = true;
+                            info = "Change to normal mode";
                         }
                         displayall(info);
                     case 'r':
@@ -201,30 +211,28 @@ int Gameplay::create_game(){
 }
 
 void Gameplay::displayall(string info){
-    v[curr].DisplayMap();
-    string fullinfo;
-    string pc;
+    v[curr]->DisplayMap();
+    string player;
     switch(champion){
         case 's':
-            pc = "Shade";
+            player = "Shade";
         case 'd':
-            pc = "Drow";
+            player = "Drow";
         case 'v':
-            pc = "Vampire";
+            player = "Vampire";
         case 'g':
-            pc = "Goblin";
+            player = "Goblin";
         case 't':
-            pc = "Troll";
+            player = "Troll";
         default:
             break;
     }
-    Character * player = (v[curr].getPlayer())->getCharacter();
-    cout << "Race: " << pc << " Gold: " << player->getGold() << endl;
-    cout << "Hp: " << player->getHp() <<endl;
-    cout << "Atk: " << player->getAtk() <<endl;
-    cout << "Def: " << player->getDef() <<endl;
-    if(info == "player die!" || info == "game win!"){
-        fullinfo = info + "1-playagain \n2-quit";
+    cout << "Race: " << player << " Gold: " << pc->getGold() << endl;
+    cout << "Hp: " << pc->getHp() <<endl;
+    cout << "Atk: " << pc->getAtk() <<endl;
+    cout << "Def: " << pc->getDef() <<endl;
+    if(info == "PC is dead!" || info == "Game win!"){
+        info = info + "1-playagain \n2-quit";
     }
     cout <<"Action: " << info<< endl;
 }
@@ -232,6 +240,9 @@ void Gameplay::displayall(string info){
 Gameplay::~Gameplay(){
     //cout << "Game dtor" << endl;
     delete pc;
+    for (int i = 0; i < 5; i++) {
+        delete this->v[i];
+    }
 }
 //consider player enemy movement after every round
 

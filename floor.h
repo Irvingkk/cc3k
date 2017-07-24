@@ -40,14 +40,14 @@ class Floor {
     vector<vector<Cell>> grid;
     vector<vector<Cell*>> chamber;
     vector<Character*> listofenmey;
-    vector<Potion> listofpotion;
-    vector<Treasure> listoftreasure;
-    int playerX;
-    int playerY;
+    vector<Potion*> listofpotion;
+    vector<Treasure*> listoftreasure;
     bool is_drow=false;
     Cell *newcord(string dir, int x, int y);
     string attackplayer(Character *nc, Character *player);
 public:
+    int playerX;
+    int playerY;
     Floor();
     Floor(std::string,int);
     void set_chamber();
@@ -61,10 +61,11 @@ public:
     bool is_valid(int,int);
     void swap(Cell*,Cell*);
     Cell* getCell(int x, int y);
-    Cell* getPlayer();
+    //Cell* getPlayer();
     string usepotion(string dir);
-    string attackenemy(string dir, bool is_hostile);
-    string attackplayer(bool is_hostile);    ~Floor();
+    string attackenemy(string dir, bool& is_hostile);
+    string attackplayer(bool is_hostile);
+    ~Floor();
 };
 
 #endif /* floor_hpp */
