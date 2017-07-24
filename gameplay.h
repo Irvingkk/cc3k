@@ -16,8 +16,8 @@ class Gameplay{
     bool is_hostile;
     char champion;
     Character *pc;
-    vector<Floor> v;
     int curr;
+    Floor* v[5];
 public:
     Gameplay();
     Gameplay(string file);

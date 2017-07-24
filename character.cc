@@ -2,7 +2,7 @@
 
 Character::Character() {}
 
-Character::Character(int hp, int atk, int def) : maxHp(hp), hp(hp), atk(atk), def(def) {}
+Character::Character(int hp, int atk, int def, bool enemy) : maxHp(hp), hp(hp), atk(atk), def(def), enemy(enemy) {}
 
 
 string Character::getType() const {
@@ -34,6 +34,10 @@ void Character::addGold(int gold) {
 }
 int Character::getGold() const{
     return gold;
+}
+
+bool Character::isEnemy(){
+    return enemy;
 }
 
 void Character::reset(){}

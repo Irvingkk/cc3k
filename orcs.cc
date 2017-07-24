@@ -17,7 +17,7 @@ using namespace std;
 
 // default ability of orcs: 180 HP, 30 Atk, 25 Def
 Orcs::Orcs(): Enemy(180, 30, 25){
-    this->type="orcs";
+    this->type="orc";
     if(rand()%100 < 50){ // randomly generate gold
         addGold(1);
     }else{

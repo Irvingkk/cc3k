@@ -18,31 +18,24 @@
 class Cell {
     int x=0;
     int y=0;
-    
-    Cell *neighbours[9]; // gai ****
-
-    
-public:
+    //vector<Cell*> neighbours;
     Character *_content;
     Item *__content;
-    bool is_occupied;
-    bool is_enemy;
-    bool is_item;
-    bool is_player;
-    int numberofneighbours;
+    //int numberofneighbours;
     char display='.';
-    
+public:
+    vector<Cell*> neighbours;
+    int numberofneighbours;
     int getx();
     int gety();
-    
     Cell();
     void setCell(int x, int y, char type);
     void rmobject();
     void set_enemy(Character*);
-    void set_player();
     void set_item(Item*);
-    //void Display();
     void addNeighbour(Cell* neighbour);
+    void setDisplay(char dis);
+    char getDisplay() const;
     Cell* getNeighbour(int);
     Character* getCharacter();
     Item* getItem();
